@@ -8,4 +8,4 @@ import { UserRepository } from './persistence/users/user.repository';
   providers: [UserRepository],
   exports: [UserRepository],
 })
-export class usersModule {}
+export class UsersModule {}
