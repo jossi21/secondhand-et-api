@@ -102,4 +102,30 @@ export class ListingRepository extends Repository<ListingEntity> {
 
     return { data, total };
   }
+
+  async getSellerStats(
+    sellerId: string,
+  ): Promise<{ active: number; sold: number; totalViews: number }> {
+    const result = await this.createQueryBuilder('listing')
+      .select('COUNT(*) FILTER (WHERE listing.status = :active)', 'active')
+      .addSelect('COUNT(*) FILTER (WHERE listing.status = :sold)', 'sold')
+      .addSelect('COALESCE(SUM(listing.viewCount), 0)', 'totalviews')
+      .where('listing.sellerId = :sellerId', { sellerId })
+      .setParameters({ active: ListingStatus.ACTIVE, sold: ListingStatus.SOLD })
+      .getRawOne<{ active: string; sold: string; totalviews: string }>();
+
+    return {
+      active: parseInt(result?.active ?? '0', 10),
+      sold: parseInt(result?.sold ?? '0', 10),
+      totalViews: parseInt(result?.totalviews ?? '0', 10),
+    };
+  }
+
+  async getBySeller(sellerId: string): Promise<ListingEntity[]> {
+    return this.find({
+      where: { sellerId },
+      relations: ['images', 'category'],
+      order: { createdAt: 'DESC' },
+    });
+  }
 }

@@ -10,6 +10,14 @@ import { JwtAuthGuard } from './libs/common/guards/jwt-auth.guard';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoryEntity } from './modules/categories/persistence/categories/category.entity';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { ListingEntity } from './modules/listings/persistence/listings/listing.entity';
+import { ListingImageEntity } from './modules/listings/persistence/listings/listing-image.entity';
+import { ListingsModule } from './modules/listings/listings.module';
+import { SavedListingEntity } from './modules/saved-listings/persistence/saved-listings/saved-listing.entity';
+import { SavedListingsModule } from './modules/saved-listings/saved-listings.module';
+import { RatingEntity } from './modules/ratings/persistence/ratings/rating.entity';
+import { RatingsModule } from './modules/ratings/rating.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,7 +28,14 @@ import { CategoriesModule } from './modules/categories/categories.module';
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
         url: config.get<string>('DATABASE_URL'),
-        entities: [UserEntity, CategoryEntity],
+        entities: [
+          UserEntity,
+          CategoryEntity,
+          ListingEntity,
+          ListingImageEntity,
+          SavedListingEntity,
+          RatingEntity,
+        ],
         synchronize: false,
         logging: false,
       }),
@@ -28,6 +43,9 @@ import { CategoriesModule } from './modules/categories/categories.module';
     UsersModule,
     AuthModule,
     CategoriesModule,
+    ListingsModule,
+    SavedListingsModule,
+    RatingsModule,
   ],
   controllers: [AppController],
   providers: [

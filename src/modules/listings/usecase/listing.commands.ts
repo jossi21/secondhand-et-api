@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-// import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
@@ -11,7 +10,12 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { Condition } from '../persistence/listings/listing.entity';
+import { UserEntity } from '../../users/persistence/users/user.entity';
+import {
+  Condition,
+  ListingEntity,
+  ListingStatus,
+} from '../persistence/listings/listing.entity';
 
 export class CreateListingCommand {
   @ApiProperty()
@@ -56,6 +60,26 @@ export class CreateListingCommand {
   @ArrayMaxSize(8)
   @IsString({ each: true })
   imageUrls?: string[];
+
+  static fromCommand(
+    command: CreateListingCommand,
+    seller: UserEntity,
+  ): ListingEntity {
+    const listing = new ListingEntity();
+
+    listing.title = command.title;
+    listing.description = command.description;
+    listing.price = command.price;
+    listing.condition = command.condition;
+    listing.status = ListingStatus.ACTIVE;
+    listing.city = command.city;
+    listing.neighborhood = command.neighborhood;
+    listing.categoryId = command.categoryId;
+    listing.sellerId = seller.id;
+    listing.createdBy = seller.id;
+
+    return listing;
+  }
 }
 
 export class UpdateListingCommand {
@@ -101,4 +125,9 @@ export class UpdateListingCommand {
   @ArrayMaxSize(8)
   @IsString({ each: true })
   imageUrls?: string[];
+
+  @ApiProperty({ enum: ListingStatus, required: false })
+  @IsOptional()
+  @IsEnum(ListingStatus)
+  status?: ListingStatus;
 }
