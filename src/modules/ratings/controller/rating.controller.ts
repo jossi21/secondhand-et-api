@@ -6,11 +6,15 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../../libs/common/decorators/current-user.decorator';
 import { Public } from '../../../libs/common/decorators/public.decorator';
+import { Roles } from '../../../libs/common/decorators/roles.decorator';
+import { RolesGuard } from '../../../libs/common/guards/roles.guard';
 import { UserEntity } from '../../users/persistence/users/user.entity';
+import { UserRole } from '../../users/persistence/users/user-role.enum';
 import {
   CreateRatingCommand,
   UpdateRatingCommand,
@@ -29,6 +33,14 @@ export class RatingController {
     private readonly ratingCommands: RatingCommands,
     private readonly ratingQuery: RatingQuery,
   ) {}
+
+  @ApiBearerAuth()
+  @Roles(UserRole.ADMIN)
+  @UseGuards(RolesGuard)
+  @Get()
+  async getAllRatings(): Promise<RatingResponse[]> {
+    return this.ratingQuery.getAllRatings();
+  }
 
   @Public()
   @Get('seller/:sellerId')

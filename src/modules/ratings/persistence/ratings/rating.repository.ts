@@ -61,4 +61,11 @@ export class RatingRepository extends Repository<RatingEntity> {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async getAll(): Promise<RatingEntity[]> {
+    return this.find({
+      relations: ['fromUser', 'toUser'],
+      order: { createdAt: 'DESC' },
+    });
+  }
 }

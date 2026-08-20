@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from '../../users/persistence/users/user.entity';
+import { UserRole } from '../../users/persistence/users/user-role.enum';
 
 export class UserInfo {
   @ApiProperty()
@@ -20,6 +21,9 @@ export class UserInfo {
   @ApiProperty()
   isVerified: boolean;
 
+  @ApiProperty({ enum: UserRole })
+  role: UserRole;
+
   static fromEntity(entity: UserEntity): UserInfo {
     const info = new UserInfo();
 
@@ -29,6 +33,7 @@ export class UserInfo {
     info.phone = entity.phone;
     info.city = entity.city;
     info.isVerified = entity.isVerified;
+    info.role = entity.role;
 
     return info;
   }

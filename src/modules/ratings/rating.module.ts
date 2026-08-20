@@ -11,5 +11,6 @@ import { RatingQuery } from './usecase/rating.logic.query';
   imports: [TypeOrmModule.forFeature([RatingEntity]), UsersModule],
   controllers: [RatingController],
   providers: [RatingRepository, RatingCommands, RatingQuery],
+  exports: [RatingRepository],
 })
 export class RatingsModule {}

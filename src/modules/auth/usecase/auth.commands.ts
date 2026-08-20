@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsEnum,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
   MinLength,
-  IsEnum,
-  IsIn,
 } from 'class-validator';
 import { UserRole } from '../../users/persistence/users/user-role.enum';
 
@@ -54,8 +54,8 @@ export class LoginCommand {
   @IsString()
   password: string;
 
-  @ApiProperty({ enum: UserRole })
-  @IsNotEmpty()
+  @ApiProperty({ enum: UserRole, required: false })
+  @IsOptional()
   @IsEnum(UserRole)
-  role: UserRole;
+  role?: UserRole;
 }

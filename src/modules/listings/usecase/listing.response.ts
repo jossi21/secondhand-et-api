@@ -16,6 +16,20 @@ export class ListingImageResponse {
   sortOrder: number;
 }
 
+export class ListingSellerInfo {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  fullName: string;
+
+  @ApiProperty()
+  isVerified: boolean;
+
+  @ApiProperty()
+  averageRating: number;
+}
+
 export class ListingResponse {
   @ApiProperty()
   id: string;
@@ -53,10 +67,16 @@ export class ListingResponse {
   @ApiProperty({ type: () => [ListingImageResponse] })
   images: ListingImageResponse[];
 
+  @ApiProperty({ type: () => ListingSellerInfo, required: false })
+  seller?: ListingSellerInfo;
+
   @ApiProperty()
   createdAt: Date;
 
-  static fromEntity(entity: ListingEntity): ListingResponse {
+  static fromEntity(
+    entity: ListingEntity,
+    sellerRating?: number,
+  ): ListingResponse {
     const response = new ListingResponse();
 
     response.id = entity.id;
@@ -74,6 +94,15 @@ export class ListingResponse {
     response.images = (entity.images ?? [])
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((img) => ({ id: img.id, url: img.url, sortOrder: img.sortOrder }));
+
+    if (entity.seller) {
+      response.seller = {
+        id: entity.seller.id,
+        fullName: entity.seller.fullName,
+        isVerified: entity.seller.isVerified,
+        averageRating: sellerRating ?? 0,
+      };
+    }
 
     return response;
   }

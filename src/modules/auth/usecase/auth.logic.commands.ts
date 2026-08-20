@@ -57,7 +57,7 @@ export class AuthCommands {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    if (user.role !== command.role) {
+    if (command.role && user.role !== command.role) {
       throw new UnauthorizedException('Invalid role for this account');
     }
 
@@ -70,6 +70,7 @@ export class AuthCommands {
     return this.jwtService.sign({
       sub: user.id,
       email: user.email,
+      role: user.role,
     });
   }
 }

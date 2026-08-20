@@ -20,6 +20,9 @@ export class RatingResponse {
   @ApiProperty()
   toUserId: string;
 
+  @ApiProperty({ required: false })
+  toUserName?: string;
+
   @ApiProperty()
   createdAt: Date;
 
@@ -35,6 +38,9 @@ export class RatingResponse {
 
     if (entity.fromUser) {
       response.fromUserName = entity.fromUser.fullName;
+    }
+    if (entity.toUser) {
+      response.toUserName = entity.toUser.fullName;
     }
 
     return response;

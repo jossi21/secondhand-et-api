@@ -19,4 +19,9 @@ export class RatingQuery {
 
     return summary;
   }
+
+  async getAllRatings(): Promise<RatingResponse[]> {
+    const ratings = await this.ratingRepository.getAll();
+    return ratings.map((r) => RatingResponse.fromEntity(r));
+  }
 }

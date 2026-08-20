@@ -17,6 +17,8 @@ import { SavedListingEntity } from './modules/saved-listings/persistence/saved-l
 import { SavedListingsModule } from './modules/saved-listings/saved-listings.module';
 import { RatingEntity } from './modules/ratings/persistence/ratings/rating.entity';
 import { RatingsModule } from './modules/ratings/rating.module';
+import { ReportEntity } from './modules/reports/persistence/reports/report.entity';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -35,6 +37,7 @@ import { RatingsModule } from './modules/ratings/rating.module';
           ListingImageEntity,
           SavedListingEntity,
           RatingEntity,
+          ReportEntity,
         ],
         synchronize: false,
         logging: false,
@@ -46,6 +49,7 @@ import { RatingsModule } from './modules/ratings/rating.module';
     ListingsModule,
     SavedListingsModule,
     RatingsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [
