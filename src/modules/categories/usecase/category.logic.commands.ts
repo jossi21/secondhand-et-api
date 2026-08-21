@@ -54,6 +54,7 @@ export class CategoryCommands {
     category.slug = slugify(command.name);
     category.description = command.description;
     category.parentId = command.parentId;
+    category.icon = command.icon;
 
     const saved = await this.categoryRepository.createCategory(category);
     return CategoryResponse.fromEntity(saved);
@@ -75,6 +76,7 @@ export class CategoryCommands {
       slug: slugify(command.name),
       description: command.description,
       parentId: command.parentId,
+      icon: command.icon ?? existing.icon,
       isActive: command.isActive ?? existing.isActive,
     });
 

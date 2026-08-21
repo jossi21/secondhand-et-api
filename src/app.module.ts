@@ -19,7 +19,8 @@ import { RatingEntity } from './modules/ratings/persistence/ratings/rating.entit
 import { RatingsModule } from './modules/ratings/rating.module';
 import { ReportEntity } from './modules/reports/persistence/reports/report.entity';
 import { ReportsModule } from './modules/reports/reports.module';
-
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -50,6 +51,8 @@ import { ReportsModule } from './modules/reports/reports.module';
     SavedListingsModule,
     RatingsModule,
     ReportsModule,
+    DashboardModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [

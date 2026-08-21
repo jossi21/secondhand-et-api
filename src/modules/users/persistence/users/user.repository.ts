@@ -31,4 +31,12 @@ export class UserRepository extends Repository<UserEntity> {
     await this.save({ id, ...entity });
     return this.getById(id) as Promise<UserEntity>;
   }
+
+  async archiveUser(id: string): Promise<void> {
+    await this.softDelete(id);
+  }
+
+  async restoreUser(id: string): Promise<void> {
+    await this.restore(id);
+  }
 }

@@ -10,5 +10,6 @@ import { SavedListingQuery } from './usecase/saved-listing.logic.query';
   imports: [TypeOrmModule.forFeature([SavedListingEntity]), ListingsModule],
   controllers: [SavedListingController],
   providers: [SavedListingRepository, SavedListingCommands, SavedListingQuery],
+  exports: [SavedListingRepository],
 })
 export class SavedListingsModule {}

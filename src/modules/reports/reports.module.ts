@@ -11,5 +11,6 @@ import { ReportQuery } from './usecase/report.logic.query';
   imports: [TypeOrmModule.forFeature([ReportEntity]), ListingsModule],
   controllers: [ReportController],
   providers: [ReportRepository, ReportCommands, ReportQuery],
+  exports: [ReportRepository],
 })
 export class ReportsModule {}

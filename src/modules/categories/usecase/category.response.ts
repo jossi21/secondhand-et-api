@@ -17,6 +17,9 @@ export class CategoryResponse {
   @ApiProperty({ required: false })
   parentId?: string;
 
+  @ApiProperty({ required: false })
+  icon?: string;
+
   @ApiProperty()
   isActive: boolean;
 
@@ -34,6 +37,7 @@ export class CategoryResponse {
     response.slug = entity.slug;
     response.description = entity.description;
     response.parentId = entity.parentId;
+    response.icon = entity.icon;
     response.isActive = entity.isActive;
     response.createdAt = entity.createdAt;
 

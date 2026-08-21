@@ -22,6 +22,11 @@ export class CreateCategoryCommand {
   @IsOptional()
   @IsUUID()
   parentId?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  icon?: string;
 }
 
 export class UpdateCategoryCommand extends CreateCategoryCommand {

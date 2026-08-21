@@ -18,6 +18,9 @@ export class CategoryEntity extends BaseEntity {
   @Column({ name: 'parent_id', type: 'uuid', nullable: true })
   parentId?: string;
 
+  @Column({ nullable: true })
+  icon?: string;
+
   @ManyToOne(() => CategoryEntity, (category) => category.children, {
     nullable: true,
     onUpdate: 'CASCADE',
