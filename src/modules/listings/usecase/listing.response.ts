@@ -28,6 +28,9 @@ export class ListingSellerInfo {
 
   @ApiProperty()
   averageRating: number;
+
+  @ApiProperty({ type: () => [Object], required: false })
+  contacts?: { type: string; value: string }[];
 }
 
 export class ListingResponse {
@@ -101,6 +104,7 @@ export class ListingResponse {
         fullName: entity.seller.fullName,
         isVerified: entity.seller.isVerified,
         averageRating: sellerRating ?? 0,
+        contacts: entity.seller.contacts,
       };
     }
 

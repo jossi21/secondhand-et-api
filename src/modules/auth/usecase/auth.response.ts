@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserEntity } from '../../users/persistence/users/user.entity';
+import {
+  UserEntity,
+  UserContact,
+} from '../../users/persistence/users/user.entity';
 import { UserRole } from '../../users/persistence/users/user-role.enum';
 
 export class UserInfo {
@@ -12,8 +15,8 @@ export class UserInfo {
   @ApiProperty()
   email: string;
 
-  @ApiProperty()
-  phone: string;
+  @ApiProperty({ required: false })
+  phone?: string;
 
   @ApiProperty({ required: false })
   city?: string;
@@ -23,6 +26,9 @@ export class UserInfo {
 
   @ApiProperty({ enum: UserRole })
   role: UserRole;
+
+  @ApiProperty({ required: false, description: 'Seller contact methods' })
+  contacts?: UserContact[];
 
   static fromEntity(entity: UserEntity): UserInfo {
     const info = new UserInfo();
@@ -34,6 +40,7 @@ export class UserInfo {
     info.city = entity.city;
     info.isVerified = entity.isVerified;
     info.role = entity.role;
+    info.contacts = entity.contacts;
 
     return info;
   }

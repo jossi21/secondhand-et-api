@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserEntity } from '../persistence/users/user.entity';
+import { UserEntity, UserContact } from '../persistence/users/user.entity';
 import { UserRole } from '../persistence/users/user-role.enum';
 
 export class UserResponse {
@@ -12,8 +12,8 @@ export class UserResponse {
   @ApiProperty()
   email: string;
 
-  @ApiProperty()
-  phone: string;
+  @ApiProperty({ required: false })
+  phone?: string;
 
   @ApiProperty({ required: false })
   city?: string;
@@ -23,6 +23,9 @@ export class UserResponse {
 
   @ApiProperty({ enum: UserRole })
   role: UserRole;
+
+  @ApiProperty({ required: false })
+  contacts?: UserContact[];
 
   @ApiProperty()
   createdAt: Date;
@@ -37,6 +40,7 @@ export class UserResponse {
     response.city = entity.city;
     response.isVerified = entity.isVerified;
     response.role = entity.role;
+    response.contacts = entity.contacts;
     response.createdAt = entity.createdAt;
 
     return response;

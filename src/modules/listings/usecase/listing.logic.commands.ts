@@ -78,7 +78,7 @@ export class ListingCommands {
       }
     }
 
-    const updated = await this.listingRepository.updateListing(id, {
+    await this.listingRepository.updateListing(id, {
       title: command.title ?? existing.title,
       description: command.description ?? existing.description,
       price: command.price ?? existing.price,
@@ -90,7 +90,19 @@ export class ListingCommands {
       updatedBy: currentUser.id,
     });
 
-    return ListingResponse.fromEntity(updated);
+    if (command.imageUrls) {
+      const images = command.imageUrls.map((url, index) => {
+        const image = new ListingImageEntity();
+        image.url = url;
+        image.sortOrder = index;
+        image.listingId = id;
+        return image;
+      });
+      await this.listingRepository.replaceImages(id, images);
+    }
+
+    const updated = await this.listingRepository.getById(id);
+    return ListingResponse.fromEntity(updated!);
   }
 
   async deleteListing(id: string, currentUser: UserEntity): Promise<void> {

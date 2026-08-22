@@ -1,6 +1,11 @@
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../../../libs/common/entities/base.entity';
-import { UserRole } from './user-role.enum';
+import { UserRole, ContactType } from './user-role.enum';
+
+export interface UserContact {
+  type: ContactType;
+  value: string;
+}
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
@@ -10,8 +15,8 @@ export class UserEntity extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column({ unique: true })
-  phone: string;
+  @Column({ unique: true, nullable: true })
+  phone?: string;
 
   @Column()
   passwordHash: string;
@@ -27,4 +32,7 @@ export class UserEntity extends BaseEntity {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.BUYER })
   role: UserRole;
+
+  @Column({ type: 'jsonb', nullable: true })
+  contacts?: UserContact[];
 }

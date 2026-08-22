@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { ListingEntity, ListingStatus } from './listing.entity';
+import { ListingImageEntity } from './listing-image.entity';
 
 export interface ListingFilters {
   q?: string;
@@ -26,7 +27,17 @@ export class ListingRepository extends Repository<ListingEntity> {
       relations: ['images', 'category', 'seller'],
     });
   }
-
+  async replaceImages(
+    listingId: string,
+    images: ListingImageEntity[],
+  ): Promise<void> {
+    await this.dataSource.transaction(async (manager) => {
+      await manager.delete(ListingImageEntity, { listingId });
+      if (images.length > 0) {
+        await manager.save(ListingImageEntity, images);
+      }
+    });
+  }
   async createListing(entity: ListingEntity): Promise<ListingEntity> {
     return this.save(entity);
   }
