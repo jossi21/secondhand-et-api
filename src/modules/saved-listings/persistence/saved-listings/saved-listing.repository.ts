@@ -15,6 +15,16 @@ export class SavedListingRepository extends Repository<SavedListingEntity> {
     return this.findOne({ where: { userId, listingId } });
   }
 
+  async findByUserAndListingIncludingDeleted(
+    userId: string,
+    listingId: string,
+  ): Promise<SavedListingEntity | null> {
+    return this.findOne({
+      where: { userId, listingId },
+      withDeleted: true,
+    });
+  }
+
   async getByUser(userId: string): Promise<SavedListingEntity[]> {
     return this.find({
       where: { userId },
@@ -25,5 +35,10 @@ export class SavedListingRepository extends Repository<SavedListingEntity> {
 
   async saveListing(entity: SavedListingEntity): Promise<SavedListingEntity> {
     return this.save(entity);
+  }
+
+  async restoreSavedListing(id: string): Promise<SavedListingEntity> {
+    await this.restore(id);
+    return this.findOne({ where: { id } }) as Promise<SavedListingEntity>;
   }
 }

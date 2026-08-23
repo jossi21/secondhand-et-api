@@ -1,13 +1,12 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserEntity } from '../../users/persistence/users/user.entity';
 import { ListingRepository } from '../../listings/persistence/listings/listing.repository';
 import { SavedListingRepository } from '../persistence/saved-listings/saved-listing.repository';
 import { SavedListingEntity } from '../persistence/saved-listings/saved-listing.entity';
-import { SavedListingResponse } from './saved-listing.response';
+
+export interface ToggleSavedListingResult {
+  saved: boolean;
+}
 
 @Injectable()
 export class SavedListingCommands {
@@ -16,46 +15,42 @@ export class SavedListingCommands {
     private readonly listingRepository: ListingRepository,
   ) {}
 
-  async saveListing(
+  /**
+   * Idempotent toggle: looks at the current DB state (including
+   * soft-deleted rows) and flips it, rather than trusting a
+   * save/unsave intent sent from the client. Avoids race conditions
+   * where a fast unsave arrives before a save has been persisted.
+   */
+  async toggleSavedListing(
     listingId: string,
     currentUser: UserEntity,
-  ): Promise<SavedListingResponse> {
+  ): Promise<ToggleSavedListingResult> {
     const listing = await this.listingRepository.getById(listingId);
     if (!listing) {
       throw new NotFoundException(`Listing not found with id ${listingId}`);
     }
 
-    const existing = await this.savedListingRepository.findByUserAndListing(
-      currentUser.id,
-      listingId,
-    );
-    if (existing) {
-      throw new ConflictException('Listing already saved');
+    const existing =
+      await this.savedListingRepository.findByUserAndListingIncludingDeleted(
+        currentUser.id,
+        listingId,
+      );
+
+    if (existing && !existing.deletedAt) {
+      await this.savedListingRepository.softDelete(existing.id);
+      return { saved: false };
+    }
+
+    if (existing && existing.deletedAt) {
+      await this.savedListingRepository.restoreSavedListing(existing.id);
+      return { saved: true };
     }
 
     const savedListing = new SavedListingEntity();
     savedListing.userId = currentUser.id;
     savedListing.listingId = listingId;
     savedListing.createdBy = currentUser.id;
-
-    const saved = await this.savedListingRepository.saveListing(savedListing);
-    saved.listing = listing;
-
-    return SavedListingResponse.fromEntity(saved);
-  }
-
-  async unsaveListing(
-    listingId: string,
-    currentUser: UserEntity,
-  ): Promise<void> {
-    const existing = await this.savedListingRepository.findByUserAndListing(
-      currentUser.id,
-      listingId,
-    );
-    if (!existing) {
-      throw new NotFoundException('This listing is not in your saved list');
-    }
-
-    await this.savedListingRepository.softDelete(existing.id);
+    await this.savedListingRepository.saveListing(savedListing);
+    return { saved: true };
   }
 }
