@@ -8,6 +8,7 @@ import {
 import { UserEntity } from '../../users/persistence/users/user.entity';
 import { UserRole } from '../../users/persistence/users/user-role.enum';
 import { UserRepository } from '../../users/persistence/users/user.repository';
+import { ListingRepository } from '../../listings/persistence/listings/listing.repository';
 import { RatingRepository } from '../persistence/ratings/rating.repository';
 import { RatingEntity } from '../persistence/ratings/rating.entity';
 import { CreateRatingCommand, UpdateRatingCommand } from './rating.commands';
@@ -18,6 +19,7 @@ export class RatingCommands {
   constructor(
     private readonly ratingRepository: RatingRepository,
     private readonly userRepository: UserRepository,
+    private readonly listingRepository: ListingRepository,
   ) {}
 
   async createRating(
@@ -28,13 +30,22 @@ export class RatingCommands {
       throw new ForbiddenException('Only buyers can rate sellers');
     }
 
-    if (command.toUserId === currentUser.id) {
+    const listing = await this.listingRepository.getById(command.listingId);
+    if (!listing) {
+      throw new NotFoundException(
+        `Listing not found with id ${command.listingId}`,
+      );
+    }
+
+    const toUserId = listing.sellerId;
+
+    if (toUserId === currentUser.id) {
       throw new BadRequestException('You cannot rate yourself');
     }
 
-    const seller = await this.userRepository.getById(command.toUserId);
+    const seller = await this.userRepository.getByIdIncludingArchived(toUserId);
     if (!seller) {
-      throw new NotFoundException(`User not found with id ${command.toUserId}`);
+      throw new NotFoundException(`User not found with id ${toUserId}`);
     }
     if (seller.role !== UserRole.SELLER) {
       throw new BadRequestException('You can only rate sellers');
@@ -42,7 +53,7 @@ export class RatingCommands {
 
     const existing = await this.ratingRepository.findByFromAndTo(
       currentUser.id,
-      command.toUserId,
+      toUserId,
     );
     if (existing) {
       throw new ConflictException(
@@ -54,10 +65,15 @@ export class RatingCommands {
     rating.score = command.score;
     rating.comment = command.comment;
     rating.fromUserId = currentUser.id;
-    rating.toUserId = command.toUserId;
+    rating.toUserId = toUserId;
+    rating.listingId = command.listingId;
     rating.createdBy = currentUser.id;
 
     const saved = await this.ratingRepository.createRating(rating);
+    saved.listing = listing;
+    saved.toUser = seller;
+    saved.fromUser = currentUser;
+
     return RatingResponse.fromEntity(saved);
   }
 
@@ -90,7 +106,10 @@ export class RatingCommands {
       throw new NotFoundException(`Rating not found with id ${id}`);
     }
 
-    if (existing.fromUserId !== currentUser.id) {
+    const isOwner = existing.fromUserId === currentUser.id;
+    const isAdmin = currentUser.role === UserRole.ADMIN;
+
+    if (!isOwner && !isAdmin) {
       throw new ForbiddenException('You can only delete your own rating');
     }
 

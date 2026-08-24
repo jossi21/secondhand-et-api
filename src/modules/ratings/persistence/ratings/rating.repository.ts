@@ -22,7 +22,7 @@ export class RatingRepository extends Repository<RatingEntity> {
   async getForSeller(toUserId: string): Promise<RatingEntity[]> {
     return this.find({
       where: { toUserId },
-      relations: ['fromUser'],
+      relations: ['fromUser', 'listing'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -57,14 +57,14 @@ export class RatingRepository extends Repository<RatingEntity> {
   async getGivenByUser(fromUserId: string): Promise<RatingEntity[]> {
     return this.find({
       where: { fromUserId },
-      relations: ['toUser'],
+      relations: ['toUser', 'listing'],
       order: { createdAt: 'DESC' },
     });
   }
 
   async getAll(): Promise<RatingEntity[]> {
     return this.find({
-      relations: ['fromUser', 'toUser'],
+      relations: ['fromUser', 'toUser', 'listing'],
       order: { createdAt: 'DESC' },
     });
   }

@@ -36,4 +36,13 @@ export class ReportCommands {
 
     return ReportResponse.fromEntity(saved);
   }
+
+  async dismissReport(reportId: string): Promise<void> {
+    const existing = await this.reportRepository.getById(reportId);
+    if (!existing) {
+      throw new NotFoundException(`Report not found with id ${reportId}`);
+    }
+
+    await this.reportRepository.softDelete(reportId);
+  }
 }

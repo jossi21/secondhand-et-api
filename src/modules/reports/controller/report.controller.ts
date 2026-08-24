@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../../libs/common/decorators/current-user.decorator';
 import { Roles } from '../../../libs/common/decorators/roles.decorator';
@@ -41,5 +51,20 @@ export class ReportController {
     @Param('listingId') listingId: string,
   ): Promise<ReportResponse[]> {
     return this.reportQuery.getReportsForListing(listingId);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @UseGuards(RolesGuard)
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async dismissReport(@Param('id') id: string): Promise<void> {
+    return this.reportCommands.dismissReport(id);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @UseGuards(RolesGuard)
+  @Get(':id')
+  async getReportById(@Param('id') id: string): Promise<ReportResponse> {
+    return this.reportQuery.getReportById(id);
   }
 }

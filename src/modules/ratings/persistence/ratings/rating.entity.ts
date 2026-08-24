@@ -1,6 +1,7 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { BaseEntity } from '../../../../libs/common/entities/base.entity';
 import { UserEntity } from '../../../users/persistence/users/user.entity';
+import { ListingEntity } from '../../../listings/persistence/listings/listing.entity';
 
 @Entity('ratings')
 @Unique(['fromUserId', 'toUserId'])
@@ -25,4 +26,11 @@ export class RatingEntity extends BaseEntity {
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'to_user_id' })
   toUser: UserEntity;
+
+  @Column({ name: 'listing_id', type: 'uuid', nullable: true })
+  listingId?: string;
+
+  @ManyToOne(() => ListingEntity, { nullable: true })
+  @JoinColumn({ name: 'listing_id' })
+  listing?: ListingEntity;
 }

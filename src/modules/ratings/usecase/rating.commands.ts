@@ -13,7 +13,7 @@ export class CreateRatingCommand {
   @ApiProperty()
   @IsNotEmpty()
   @IsUUID()
-  toUserId: string;
+  listingId: string;
 
   @ApiProperty({ minimum: 1, maximum: 5 })
   @IsNotEmpty()

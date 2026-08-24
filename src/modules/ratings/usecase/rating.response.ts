@@ -23,6 +23,12 @@ export class RatingResponse {
   @ApiProperty({ required: false })
   toUserName?: string;
 
+  @ApiProperty({ required: false })
+  listingId?: string;
+
+  @ApiProperty({ required: false })
+  listingTitle?: string;
+
   @ApiProperty()
   createdAt: Date;
 
@@ -34,6 +40,7 @@ export class RatingResponse {
     response.comment = entity.comment;
     response.fromUserId = entity.fromUserId;
     response.toUserId = entity.toUserId;
+    response.listingId = entity.listingId;
     response.createdAt = entity.createdAt;
 
     if (entity.fromUser) {
@@ -41,6 +48,9 @@ export class RatingResponse {
     }
     if (entity.toUser) {
       response.toUserName = entity.toUser.fullName;
+    }
+    if (entity.listing) {
+      response.listingTitle = entity.listing.title;
     }
 
     return response;
