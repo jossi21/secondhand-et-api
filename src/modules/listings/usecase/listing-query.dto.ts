@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsEnum,
+  IsIn,
   IsInt,
   IsOptional,
   IsPositive,
@@ -39,10 +39,14 @@ export class ListingQueryDto {
   @IsPositive()
   maxPrice?: number;
 
-  @ApiPropertyOptional({ enum: ListingStatus })
+  @ApiPropertyOptional({
+    enum: [...Object.values(ListingStatus), 'all'],
+    description:
+      'Filter by status. Omit to default to active (public browse). Pass "all" (admin only, in practice) to see every status.',
+  })
   @IsOptional()
-  @IsEnum(ListingStatus)
-  status?: ListingStatus;
+  @IsIn([...Object.values(ListingStatus), 'all'])
+  status?: ListingStatus | 'all';
 
   @ApiPropertyOptional()
   @IsOptional()

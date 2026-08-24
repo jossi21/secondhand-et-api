@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from '../categories/categories.module';
 import { RatingsModule } from '../ratings/rating.module';
@@ -13,7 +13,7 @@ import { ListingQuery } from './usecase/listing.logic.query';
   imports: [
     TypeOrmModule.forFeature([ListingEntity, ListingImageEntity]),
     CategoriesModule,
-    RatingsModule,
+    forwardRef(() => RatingsModule),
   ],
   controllers: [ListingController],
   providers: [ListingRepository, ListingCommands, ListingQuery],

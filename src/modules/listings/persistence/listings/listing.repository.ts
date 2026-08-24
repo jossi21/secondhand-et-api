@@ -9,7 +9,7 @@ export interface ListingFilters {
   city?: string;
   minPrice?: number;
   maxPrice?: number;
-  status?: ListingStatus;
+  status?: ListingStatus | 'all';
   sellerId?: string;
   page?: number;
   limit?: number;
@@ -100,9 +100,15 @@ export class ListingRepository extends Repository<ListingEntity> {
       });
     }
 
-    query.andWhere('listing.status = :status', {
-      status: filters.status ?? ListingStatus.ACTIVE,
-    });
+    if (filters.status && filters.status !== 'all') {
+      query.andWhere('listing.status = :status', { status: filters.status });
+    } else if (!filters.status) {
+      // No status specified at all (public browse) — default to active only.
+      query.andWhere('listing.status = :status', {
+        status: ListingStatus.ACTIVE,
+      });
+    }
+    // filters.status === 'all' → no status filter, every status included.
 
     query
       .orderBy('listing.createdAt', 'DESC')

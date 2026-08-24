@@ -12,6 +12,10 @@ export class UserRepository extends Repository<UserEntity> {
     return this.findOne({ where: { id } });
   }
 
+  async getByIdIncludingArchived(id: string): Promise<UserEntity | null> {
+    return this.findOne({ where: { id }, withDeleted: true });
+  }
+
   async getByEmail(email: string): Promise<UserEntity | null> {
     return this.findOne({ where: { email } });
   }
