@@ -43,3 +43,10 @@ export class BuyerDashboardResponse {
   @ApiProperty({ type: () => [RatingResponse] })
   ratingsGiven: RatingResponse[];
 }
+
+export class PublicStatsResponse {
+  activeListings: number;
+  soldListings: number;
+  citiesCovered: number;
+  verifiedSellers: number;
+}

@@ -145,4 +145,23 @@ export class ListingRepository extends Repository<ListingEntity> {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async getPlatformStats(): Promise<{
+    activeListings: number;
+    soldListings: number;
+    citiesCovered: number;
+  }> {
+    const result = await this.createQueryBuilder('listing')
+      .select('COUNT(*) FILTER (WHERE listing.status = :active)', 'active')
+      .addSelect('COUNT(*) FILTER (WHERE listing.status = :sold)', 'sold')
+      .addSelect('COUNT(DISTINCT listing.city)', 'cities')
+      .setParameters({ active: ListingStatus.ACTIVE, sold: ListingStatus.SOLD })
+      .getRawOne<{ active: string; sold: string; cities: string }>();
+
+    return {
+      activeListings: parseInt(result?.active ?? '0', 10),
+      soldListings: parseInt(result?.sold ?? '0', 10),
+      citiesCovered: parseInt(result?.cities ?? '0', 10),
+    };
+  }
 }

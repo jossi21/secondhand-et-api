@@ -12,8 +12,17 @@ import { extname } from 'path';
 import { randomUUID } from 'crypto';
 import { UploadResponse } from '../usecase/upload.response';
 
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+const UPLOAD_DEST = process.env.UPLOAD_DEST ?? './uploads';
+
+const MAX_FILE_SIZE_BYTES =
+  Number(process.env.UPLOAD_MAX_FILE_SIZE_MB ?? '5') * 1024 * 1024;
+
+const ALLOWED_MIME_TYPES = (
+  process.env.UPLOAD_ALLOWED_MIME_TYPES ?? 'image/jpeg,image/png,image/webp'
+)
+  .split(',')
+  .map((t) => t.trim())
+  .filter(Boolean);
 
 @ApiTags('uploads')
 @ApiBearerAuth()
@@ -24,7 +33,7 @@ export class UploadController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads',
+        destination: UPLOAD_DEST,
         filename: (_req, file, callback) => {
           const uniqueName = `${randomUUID()}${extname(file.originalname)}`;
           callback(null, uniqueName);
@@ -35,7 +44,7 @@ export class UploadController {
         if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
           callback(
             new BadRequestException(
-              'Only JPEG, PNG, or WEBP images are allowed',
+              `Unsupported file type. Allowed: ${ALLOWED_MIME_TYPES.join(', ')}`,
             ),
             false,
           );

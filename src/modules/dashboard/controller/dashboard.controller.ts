@@ -6,8 +6,9 @@ import { DashboardQuery } from '../usecase/dashboard.logic.query';
 import {
   BuyerDashboardResponse,
   SellerDashboardResponse,
+  PublicStatsResponse,
 } from '../usecase/dashboard.response';
-
+import { Public } from '../../../libs/common/decorators/public.decorator';
 @ApiTags('dashboard')
 @ApiBearerAuth()
 @Controller('dashboard')
@@ -26,5 +27,11 @@ export class DashboardController {
     @CurrentUser() currentUser: UserEntity,
   ): Promise<BuyerDashboardResponse> {
     return this.dashboardQuery.getBuyerDashboard(currentUser);
+  }
+
+  @Public()
+  @Get('public-stats')
+  async getPublicStats(): Promise<PublicStatsResponse> {
+    return this.dashboardQuery.getPublicStats();
   }
 }

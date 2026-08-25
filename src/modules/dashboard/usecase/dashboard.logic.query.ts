@@ -11,8 +11,9 @@ import { SavedListingResponse } from '../../saved-listings/usecase/saved-listing
 import {
   BuyerDashboardResponse,
   SellerDashboardResponse,
+  PublicStatsResponse,
 } from './dashboard.response';
-
+import { UserRepository } from '../../users/persistence/users/user.repository';
 const RECENT_LIMIT = 5;
 
 @Injectable()
@@ -22,6 +23,7 @@ export class DashboardQuery {
     private readonly ratingRepository: RatingRepository,
     private readonly reportRepository: ReportRepository,
     private readonly savedListingRepository: SavedListingRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async getSellerDashboard(
@@ -73,6 +75,21 @@ export class DashboardQuery {
     response.ratingsGiven = ratingsGiven.map((r) =>
       RatingResponse.fromEntity(r),
     );
+
+    return response;
+  }
+
+  async getPublicStats(): Promise<PublicStatsResponse> {
+    const [platformStats, verifiedSellers] = await Promise.all([
+      this.listingRepository.getPlatformStats(),
+      this.userRepository.countVerifiedSellers(),
+    ]);
+
+    const response = new PublicStatsResponse();
+    response.activeListings = platformStats.activeListings;
+    response.soldListings = platformStats.soldListings;
+    response.citiesCovered = platformStats.citiesCovered;
+    response.verifiedSellers = verifiedSellers;
 
     return response;
   }

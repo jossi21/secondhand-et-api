@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { UserRole } from './user-role.enum';
 
 @Injectable()
 export class UserRepository extends Repository<UserEntity> {
@@ -42,5 +43,11 @@ export class UserRepository extends Repository<UserEntity> {
 
   async restoreUser(id: string): Promise<void> {
     await this.restore(id);
+  }
+
+  async countVerifiedSellers(): Promise<number> {
+    return this.count({
+      where: { role: UserRole.SELLER, isVerified: true },
+    });
   }
 }
