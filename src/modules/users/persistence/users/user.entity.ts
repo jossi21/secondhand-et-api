@@ -30,6 +30,9 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   nationalIdRef?: string;
 
+  @Column({ nullable: true })
+  nationalIdPhotoUrl?: string;
+
   @Column({ type: 'enum', enum: UserRole, default: UserRole.BUYER })
   role: UserRole;
 

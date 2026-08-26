@@ -5,10 +5,23 @@ import {
   IsBoolean,
   IsOptional,
   IsString,
+  IsNotEmpty,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ContactDto } from './contact.dto';
+
+export class SubmitNationalIdCommand {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  nationalIdRef: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  nationalIdPhotoUrl: string;
+}
 
 export class UpdateUserCommand {
   @ApiProperty({ required: false })

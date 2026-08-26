@@ -51,13 +51,13 @@ export class RatingCommands {
       throw new BadRequestException('You can only rate sellers');
     }
 
-    const existing = await this.ratingRepository.findByFromAndTo(
+    const existing = await this.ratingRepository.findByFromUserAndListing(
       currentUser.id,
-      toUserId,
+      command.listingId,
     );
     if (existing) {
       throw new ConflictException(
-        'You have already rated this seller. Update your existing rating instead.',
+        'You have already rated this item. Update your existing review instead.',
       );
     }
 

@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserRepository } from '../persistence/users/user.repository';
-import { UpdateUserCommand } from './user.commands';
+import { SubmitNationalIdCommand, UpdateUserCommand } from './user.commands';
 import { UserResponse } from './user.response';
 import { ContactType, UserRole } from '../persistence/users/user-role.enum';
 
@@ -57,6 +57,25 @@ export class UserCommands {
       city: command.city ?? existing.city,
       isVerified: command.isVerified ?? existing.isVerified,
       contacts: command.contacts ?? existing.contacts,
+    });
+
+    return UserResponse.fromEntity(updated);
+  }
+
+  async submitNationalId(
+    userId: string,
+    command: SubmitNationalIdCommand,
+  ): Promise<UserResponse> {
+    const existing = await this.userRepository.getById(userId);
+    if (!existing) {
+      throw new NotFoundException(`User not found with id ${userId}`);
+    }
+
+    // Submitting new ID info resets verification — admin must re-review.
+    const updated = await this.userRepository.updateUser(userId, {
+      nationalIdRef: command.nationalIdRef,
+      nationalIdPhotoUrl: command.nationalIdPhotoUrl,
+      isVerified: false,
     });
 
     return UserResponse.fromEntity(updated);

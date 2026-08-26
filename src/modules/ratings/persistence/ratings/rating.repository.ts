@@ -12,11 +12,11 @@ export class RatingRepository extends Repository<RatingEntity> {
     return this.findOne({ where: { id } });
   }
 
-  async findByFromAndTo(
+  async findByFromUserAndListing(
     fromUserId: string,
-    toUserId: string,
+    listingId: string,
   ): Promise<RatingEntity | null> {
-    return this.findOne({ where: { fromUserId, toUserId } });
+    return this.findOne({ where: { fromUserId, listingId } });
   }
 
   async getForSeller(toUserId: string): Promise<RatingEntity[]> {

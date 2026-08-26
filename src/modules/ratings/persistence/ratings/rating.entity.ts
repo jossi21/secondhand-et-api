@@ -4,7 +4,7 @@ import { UserEntity } from '../../../users/persistence/users/user.entity';
 import { ListingEntity } from '../../../listings/persistence/listings/listing.entity';
 
 @Entity('ratings')
-@Unique(['fromUserId', 'toUserId'])
+@Unique(['fromUserId', 'listingId'])
 @Index(['toUserId'])
 export class RatingEntity extends BaseEntity {
   @Column({ type: 'int' })

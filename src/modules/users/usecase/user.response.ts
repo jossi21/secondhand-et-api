@@ -21,6 +21,12 @@ export class UserResponse {
   @ApiProperty()
   isVerified: boolean;
 
+  @ApiProperty({ required: false })
+  nationalIdRef?: string;
+
+  @ApiProperty({ required: false })
+  nationalIdPhotoUrl?: string;
+
   @ApiProperty({ enum: UserRole })
   role: UserRole;
 
@@ -39,6 +45,8 @@ export class UserResponse {
     response.phone = entity.phone;
     response.city = entity.city;
     response.isVerified = entity.isVerified;
+    response.nationalIdRef = entity.nationalIdRef;
+    response.nationalIdPhotoUrl = entity.nationalIdPhotoUrl;
     response.role = entity.role;
     response.contacts = entity.contacts;
     response.createdAt = entity.createdAt;
