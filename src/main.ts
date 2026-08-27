@@ -9,6 +9,8 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // Serves any files still present on local disk (legacy/local fallback).
+  // Cloudinary-hosted images bypass this entirely and load directly from Cloudinary's CDN.
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
   });
